@@ -173,6 +173,7 @@ def plot_data(data,labels,title='Data',save=True,display=False):
             ax.scatter(data[:,0],data[:,1],data[:,2],s=3,c=labels, cmap="jet")
             ax.view_init(20, -20)
         else:
+            return 
             raise("Invalid dimension for plot")
         if save:
             # Create the output directory if it doesn't exist

@@ -271,6 +271,7 @@ def subMatrixEmbeddings(nc, SM, meanPointEmbeddings,**reduce_dim_kwargs):
 def isumap(data,
            k: int,
            d: int,
+           sqrt: bool,
            normalize:bool = True,
            distBeyondNN:bool = True,
            verbose: bool=True,
@@ -362,7 +363,55 @@ def isumap(data,
         t1 = time()
         if verbose:
             printtime("Neighbourhoods merged in",t1-t0)
-        
+        ############################################################
+        # if sqrt:
+        #     RC = np.zeros_like(R)
+        #     for i in range(len(data_D)): # for each data point 
+        #         # get indices of neighbors
+        #         neighbors = []
+        #         data_points = data_D[i]
+        #         for j in range(len(data_points)):
+        #             if data_points[j] != 0:
+        #                 neighbors.append(j)
+        #         for n1 in neighbors:
+        #             for n2 in neighbors:
+        #                 if n1 != n2:
+        #                     if RC[n1][n2] != 0:
+        #                         tmp = RC[n1][n2]
+        #                         RC[n1][n2] = min(tmp, np.sqrt(2)*data_points[n1])
+        #                     else:
+        #                         RC[n1][n2] = np.sqrt(2)*data_points[n1]
+        #                     if RC[n2][n1] != 0:
+        #                         tmp = RC[n2][n1]
+        #                         RC[n2][n1] = min(tmp, np.sqrt(2)*data_points[n2])
+        #                     else:
+        #                         RC[n2][n1] = np.sqrt(2)*data_points[n2]
+        #     R += RC
+        if sqrt:
+            # RC = np.zeros_like(R)
+            DC = np.zeros_like(data_D)
+            for i in range(len(data_D)): # for each data point 
+                # get indices of neighbors
+                neighbors = []
+                data_points = data_D[i]
+                for j in range(len(data_points)):
+                    if data_points[j] != 0:
+                        neighbors.append(j)
+                for n1 in neighbors:
+                    for n2 in neighbors:
+                        if n1 != n2:
+                            if DC[n1][n2] != 0:
+                                tmp = DC[n1][n2]
+                                DC[n1][n2] = min(tmp, np.sqrt(2)*data_points[n1])
+                            else:
+                                DC[n1][n2] = np.sqrt(2)*data_points[n1]
+                            if DC[n2][n1] != 0:
+                                tmp = DC[n2][n1]
+                                DC[n2][n1] = min(tmp, np.sqrt(2)*data_points[n2])
+                            else:
+                                DC[n2][n1] = np.sqrt(2)*data_points[n2]
+            data_D += DC
+        ############################################################
         print("\nRunning Dijkstra...")
         t0 = time()
         graph = csr_matrix(data_D)
